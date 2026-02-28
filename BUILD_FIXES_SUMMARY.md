@@ -14,6 +14,24 @@ UnicodeEncodeError: 'charmap' codec can't encode characters in position 0-8
 - ✅ `vehicle_cli.py` - 添加UTF-8编码处理
 - ✅ `.github/workflows/build-vehicle-windows.yml` - 配置环境变量和chcp
 
+### 问题1b: Unicode特殊字符错误（已修复）
+
+**错误信息**:
+```
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in position 0
+```
+
+**原因**: 即使配置了UTF-8，`✓` (U+2713) 等特殊Unicode符号在Windows cmd.exe中仍无法显示
+
+**解决方案**:
+- ✅ 使用 `[OK]` 替代 `✓`
+- ✅ 在验证步骤中添加 `PYTHONIOENCODING: utf-8` 环境变量
+- ✅ 在验证步骤中添加 `chcp 65001`
+
+**字符选择建议**:
+- ✅ 推荐: `[OK]`, `[PASS]`, `[FAIL]`, `+`, `-`, `*`
+- ❌ 避免: `✓`, `✗`, `●`, `→`, 等特殊Unicode符号
+
 ### 问题2: 依赖检查失败（已修复）
 
 **错误信息**:
@@ -96,14 +114,22 @@ for import_name, (module_name, display_name, pip_name) in required_packages.item
   continue-on-error: false
     
 - name: ℹ️ Verify installation
+  env:
+    PYTHONIOENCODING: utf-8  # ✅ 添加UTF-8环境变量
   run: |
-    # ✅ 实际导入验证
-    python -c "import cv2; print('✓ OpenCV:', cv2.__version__)"
-    python -c "import fitz; print('✓ PyMuPDF:', fitz.__version__)"
-    python -c "import paddleocr; print('✓ PaddleOCR installed')"
-    python -c "import openpyxl; print('✓ openpyxl:', openpyxl.__version__)"
-    python -c "import PyInstaller; print('✓ PyInstaller:', PyInstaller.__version__)"
+    chcp 65001  # ✅ 设置控制台编码
+    # ✅ 实际导入验证，使用ASCII字符避免编码问题
+    python -c "import cv2; print('[OK] OpenCV:', cv2.__version__)"
+    python -c "import fitz; print('[OK] PyMuPDF:', fitz.__version__)"
+    python -c "import paddleocr; print('[OK] PaddleOCR installed')"
+    python -c "import openpyxl; print('[OK] openpyxl:', openpyxl.__version__)"
+    python -c "import PyInstaller; print('[OK] PyInstaller:', PyInstaller.__version__)"
 ```
+
+**关键改进**:
+- ✅ 使用 `[OK]` 而不是 `✓` (U+2713) - 避免Unicode编码问题
+- ✅ 添加 `PYTHONIOENCODING: utf-8` 环境变量
+- ✅ 添加 `chcp 65001` 设置控制台代码页
 
 ## 📋 修改的文件清单
 
@@ -162,12 +188,13 @@ git push origin main
 ==========================================
 Verifying Critical Packages
 ==========================================
-✓ OpenCV: 4.8.1
-✓ PyMuPDF: 1.23.8
-✓ PaddleOCR installed
-✓ openpyxl: 3.1.2
-✓ PyInstaller: 6.3.0
+[OK] OpenCV: 4.8.1
+[OK] PyMuPDF: 1.23.8
+[OK] PaddleOCR installed
+[OK] openpyxl: 3.1.2
+[OK] PyInstaller: 6.3.0
 ==========================================
+All packages verified successfully!
 ```
 
 ## 🎯 关键改进点

@@ -128,6 +128,35 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 **A**: 不会。我们只修改了stdout/stderr，文件操作使用独立的编码指定（如`open(file, encoding='utf-8')`）。
 
+### Q: 为什么验证步骤还是报 UnicodeEncodeError？
+
+**A**: 即使配置了UTF-8，某些特殊Unicode字符（如 `✓` U+2713）在Windows控制台（cmd.exe）中仍可能无法显示。
+
+**问题示例**:
+```python
+# ❌ 可能失败
+print('✓ OpenCV installed')  # UnicodeEncodeError
+
+# ✅ 推荐方式
+print('[OK] OpenCV installed')  # 使用ASCII字符
+print('+ OpenCV installed')     # 或使用简单符号
+```
+
+**解决方案**:
+1. 使用纯ASCII字符（`[OK]`, `[PASS]`, `+`, `-`）
+2. 在workflow步骤中添加 `PYTHONIOENCODING: utf-8` 和 `chcp 65001`
+3. 在Python输出前设置正确的编码处理
+
+**已修复**:
+```yaml
+- name: Verify installation
+  env:
+    PYTHONIOENCODING: utf-8  # 必须添加
+  run: |
+    chcp 65001  # 必须添加
+    python -c "import cv2; print('[OK] OpenCV')"  # 使用[OK]而不是✓
+```
+
 ## 最佳实践
 
 ### 1. 文件顶部声明编码

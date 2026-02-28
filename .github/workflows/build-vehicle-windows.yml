@@ -37,7 +37,10 @@ jobs:
       continue-on-error: false
         
     - name: ℹ️ Verify installation
+      env:
+        PYTHONIOENCODING: utf-8
       run: |
+        chcp 65001
         echo "=========================================="
         echo "Python Environment Information"
         echo "=========================================="
@@ -49,12 +52,13 @@ jobs:
         echo "=========================================="
         echo "Verifying Critical Packages"
         echo "=========================================="
-        python -c "import cv2; print('✓ OpenCV:', cv2.__version__)"
-        python -c "import fitz; print('✓ PyMuPDF:', fitz.__version__)"
-        python -c "import paddleocr; print('✓ PaddleOCR installed')"
-        python -c "import openpyxl; print('✓ openpyxl:', openpyxl.__version__)"
-        python -c "import PyInstaller; print('✓ PyInstaller:', PyInstaller.__version__)"
+        python -c "import cv2; print('[OK] OpenCV:', cv2.__version__)"
+        python -c "import fitz; print('[OK] PyMuPDF:', fitz.__version__)"
+        python -c "import paddleocr; print('[OK] PaddleOCR installed')"
+        python -c "import openpyxl; print('[OK] openpyxl:', openpyxl.__version__)"
+        python -c "import PyInstaller; print('[OK] PyInstaller:', PyInstaller.__version__)"
         echo "=========================================="
+        echo "All packages verified successfully!"
         
     - name: 🔨 Build Windows EXE
       env:
