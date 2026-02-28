@@ -68,13 +68,31 @@ jobs:
         python build_vehicle_exe.py
         
     - name: ✅ Verify build output
+      shell: pwsh
       run: |
-        dir dist\VehicleArchiveProcessor
-        if not exist "dist\VehicleArchiveProcessor\VehicleArchiveProcessor.exe" (
-          echo Error: EXE not found!
+        Write-Host "=========================================="
+        Write-Host "Checking build output directory..."
+        Write-Host "=========================================="
+        
+        if (Test-Path "dist\VehicleArchiveProcessor") {
+          Write-Host "[OK] Build directory exists"
+          Get-ChildItem dist\VehicleArchiveProcessor -Name
+        } else {
+          Write-Host "[ERROR] Build directory not found!"
           exit 1
-        )
-        echo Build successful!
+        }
+        
+        if (Test-Path "dist\VehicleArchiveProcessor\VehicleArchiveProcessor.exe") {
+          $exeSize = (Get-Item "dist\VehicleArchiveProcessor\VehicleArchiveProcessor.exe").Length / 1MB
+          Write-Host "[OK] EXE file found (Size: $([math]::Round($exeSize, 2)) MB)"
+        } else {
+          Write-Host "[ERROR] EXE file not found!"
+          exit 1
+        }
+        
+        Write-Host "=========================================="
+        Write-Host "[SUCCESS] Build verification complete!"
+        Write-Host "=========================================="
         
     - name: 🧪 Test EXE (help command)
       env:
@@ -86,24 +104,44 @@ jobs:
         .\VehicleArchiveProcessor.exe --version
         
     - name: 📝 Create build info
+      shell: pwsh
       run: |
-        echo Build Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss") > dist\VehicleArchiveProcessor\BUILD_INFO.txt
-        echo Git Commit: ${{ github.sha }} >> dist\VehicleArchiveProcessor\BUILD_INFO.txt
-        echo Git Branch: ${{ github.ref_name }} >> dist\VehicleArchiveProcessor\BUILD_INFO.txt
-        echo Build Number: ${{ github.run_number }} >> dist\VehicleArchiveProcessor\BUILD_INFO.txt
+        $buildInfo = @"
+Build Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+Git Commit: ${{ github.sha }}
+Git Branch: ${{ github.ref_name }}
+Build Number: ${{ github.run_number }}
+"@
         if ("${{ github.event.inputs.version }}" -ne "") {
-          echo Version: ${{ github.event.inputs.version }} >> dist\VehicleArchiveProcessor\BUILD_INFO.txt
+          $buildInfo += "`nVersion: ${{ github.event.inputs.version }}"
         }
+        $buildInfo | Out-File -FilePath "dist\VehicleArchiveProcessor\BUILD_INFO.txt" -Encoding UTF8
+        Write-Host "[OK] Build info created"
         
     - name: 📦 Create ZIP archive
+      shell: pwsh
       run: |
+        Write-Host "Creating ZIP archive..."
         cd dist
         Compress-Archive -Path VehicleArchiveProcessor -DestinationPath VehicleArchiveProcessor-Windows-${{ github.run_number }}.zip -CompressionLevel Optimal
+        Write-Host "[OK] ZIP archive created"
         
     - name: 📊 Calculate package size
+      shell: pwsh
       run: |
-        $size = (Get-Item dist\VehicleArchiveProcessor-Windows-${{ github.run_number }}.zip).Length / 1MB
-        Write-Host "Package size: $([math]::Round($size, 2)) MB"
+        $zipFile = "dist\VehicleArchiveProcessor-Windows-${{ github.run_number }}.zip"
+        if (Test-Path $zipFile) {
+          $size = (Get-Item $zipFile).Length / 1MB
+          Write-Host "=========================================="
+          Write-Host "Package Information"
+          Write-Host "=========================================="
+          Write-Host "File: VehicleArchiveProcessor-Windows-${{ github.run_number }}.zip"
+          Write-Host "Size: $([math]::Round($size, 2)) MB"
+          Write-Host "=========================================="
+        } else {
+          Write-Host "[ERROR] ZIP file not found!"
+          exit 1
+        }
         
     - name: 📤 Upload artifact (development builds)
       if: "!startsWith(github.ref, 'refs/tags/')"

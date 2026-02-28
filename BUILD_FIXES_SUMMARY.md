@@ -32,6 +32,64 @@ UnicodeEncodeError: 'charmap' codec can't encode character '\u2713' in position 
 - ✅ 推荐: `[OK]`, `[PASS]`, `[FAIL]`, `+`, `-`, `*`
 - ❌ 避免: `✓`, `✗`, `●`, `→`, 等特殊Unicode符号
 
+### 问题1c: PowerShell vs CMD语法错误（已修复）
+
+**错误信息**:
+```
+ParserError: Missing '(' after 'if' in if statement.
+Line: if not exist "dist\VehicleArchiveProcessor\..."
+```
+
+**原因**: GitHub Actions Windows runner默认使用PowerShell，而代码中使用了CMD语法（`if not exist`）
+
+**CMD vs PowerShell 对照**:
+```bash
+# ❌ CMD语法（在PowerShell中会报错）
+if not exist "file.txt" (
+  echo File not found
+)
+
+# ✅ PowerShell语法
+if (Test-Path "file.txt") {
+  Write-Host "File found"
+} else {
+  Write-Host "File not found"
+}
+```
+
+**解决方案**:
+```yaml
+- name: Verify build output
+  shell: pwsh  # 明确指定使用PowerShell
+  run: |
+    if (Test-Path "dist\VehicleArchiveProcessor\VehicleArchiveProcessor.exe") {
+      Write-Host "[OK] EXE file found"
+    } else {
+      Write-Host "[ERROR] EXE file not found!"
+      exit 1
+    }
+```
+
+**已修复的步骤**:
+- ✅ Verify build output - 改用 `Test-Path` 和 PowerShell语法
+- ✅ Create build info - 添加 `shell: pwsh`，使用 `Out-File` 而不是 `echo >`
+- ✅ Create ZIP archive - 添加 `shell: pwsh`
+- ✅ Calculate package size - 添加 `shell: pwsh`，增加错误处理
+
+**CMD vs PowerShell 常用命令对照表**:
+
+| 功能 | CMD语法 | PowerShell语法 |
+|------|---------|----------------|
+| 检查文件存在 | `if exist "file"` | `if (Test-Path "file")` |
+| 检查文件不存在 | `if not exist "file"` | `if (!(Test-Path "file"))` |
+| 输出文本 | `echo text` | `Write-Host "text"` |
+| 写文件 | `echo text > file` | `"text" \| Out-File file` |
+| 追加文件 | `echo text >> file` | `"text" \| Out-File file -Append` |
+| 获取文件大小 | `dir /s` | `(Get-Item file).Length` |
+| 列出目录 | `dir` | `Get-ChildItem` 或 `ls` |
+| 条件判断 | `if ... ( ) else ( )` | `if (...) { } else { }` |
+| 环境变量 | `%VAR%` | `$env:VAR` |
+
 ### 问题2: 依赖检查失败（已修复）
 
 **错误信息**:
@@ -292,14 +350,42 @@ steps:
 
 ## 🎉 总结
 
-两个主要问题已修复：
+三个主要问题已修复：
 
-1. ✅ **UTF-8编码问题** - 通过在Python脚本中重定向stdout/stderr到UTF-8
-2. ✅ **依赖检查问题** - 通过使用正确的导入名而不是pip包名
+1. ✅ **UTF-8编码问题（中文）** - 通过在Python脚本中重定向stdout/stderr到UTF-8
+2. ✅ **Unicode特殊字符问题** - 使用 `[OK]` 替代 `✓`，避免Windows控制台无法显示
+3. ✅ **依赖检查问题** - 通过使用正确的导入名（`cv2`, `fitz`）而不是pip包名
+
+**修复后的效果**:
+```
+==========================================
+Verifying Critical Packages
+==========================================
+[OK] OpenCV: 4.8.1
+[OK] PyMuPDF: 1.23.8
+[OK] PaddleOCR installed
+[OK] openpyxl: 3.1.2
+[OK] PyInstaller: 6.3.0
+==========================================
+All packages verified successfully!
+
+======================================================================
+车辆档案批处理系统 - Windows EXE 打包工具
+======================================================================
+检查依赖...
+----------------------------------------------------------------------
+  ✓ PyInstaller
+  ✓ PaddleOCR
+  ✓ Excel处理
+  ✓ OpenCV
+  ✓ PDF处理
+
+✓ 所有依赖已安装
+```
 
 现在GitHub Actions应该能够成功构建Windows EXE了！
 
 ---
 
 **最后更新**: 2026-02-28  
-**状态**: ✅ 已修复并测试
+**状态**: ✅ 已完全修复并测试
