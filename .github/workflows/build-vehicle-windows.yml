@@ -106,16 +106,15 @@ jobs:
     - name: 📝 Create build info
       shell: pwsh
       run: |
-        $buildInfo = @"
-Build Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-Git Commit: ${{ github.sha }}
-Git Branch: ${{ github.ref_name }}
-Build Number: ${{ github.run_number }}
-"@
+        $buildDate = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+        $buildInfo = "Build Date: $buildDate`n"
+        $buildInfo += "Git Commit: ${{ github.sha }}`n"
+        $buildInfo += "Git Branch: ${{ github.ref_name }}`n"
+        $buildInfo += "Build Number: ${{ github.run_number }}`n"
         if ("${{ github.event.inputs.version }}" -ne "") {
-          $buildInfo += "`nVersion: ${{ github.event.inputs.version }}"
+          $buildInfo += "Version: ${{ github.event.inputs.version }}`n"
         }
-        $buildInfo | Out-File -FilePath "dist\VehicleArchiveProcessor\BUILD_INFO.txt" -Encoding UTF8
+        $buildInfo | Out-File -FilePath "dist\VehicleArchiveProcessor\BUILD_INFO.txt" -Encoding UTF8 -NoNewline
         Write-Host "[OK] Build info created"
         
     - name: 📦 Create ZIP archive

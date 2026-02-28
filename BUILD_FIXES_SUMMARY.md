@@ -350,11 +350,12 @@ steps:
 
 ## 🎉 总结
 
-三个主要问题已修复：
+四个主要问题已修复：
 
 1. ✅ **UTF-8编码问题（中文）** - 通过在Python脚本中重定向stdout/stderr到UTF-8
 2. ✅ **Unicode特殊字符问题** - 使用 `[OK]` 替代 `✓`，避免Windows控制台无法显示
-3. ✅ **依赖检查问题** - 通过使用正确的导入名（`cv2`, `fitz`）而不是pip包名
+3. ✅ **PowerShell语法问题** - 将CMD语法（`if not exist`）改为PowerShell语法（`Test-Path`）
+4. ✅ **依赖检查问题** - 通过使用正确的导入名（`cv2`, `fitz`）而不是pip包名
 
 **修复后的效果**:
 ```
@@ -368,6 +369,15 @@ Verifying Critical Packages
 [OK] PyInstaller: 6.3.0
 ==========================================
 All packages verified successfully!
+
+==========================================
+Checking build output directory...
+==========================================
+[OK] Build directory exists
+[OK] EXE file found (Size: 15.32 MB)
+==========================================
+[SUCCESS] Build verification complete!
+==========================================
 
 ======================================================================
 车辆档案批处理系统 - Windows EXE 打包工具
@@ -383,9 +393,15 @@ All packages verified successfully!
 ✓ 所有依赖已安装
 ```
 
+**构建产物下载**:
+- 📥 详见 [DOWNLOAD_ARTIFACTS_GUIDE.md](DOWNLOAD_ARTIFACTS_GUIDE.md) - 完整下载指南
+- 🔗 [Actions页面](https://github.com/wanghaoggghappy/id_card_ocr/actions) - 查看构建状态
+- 📦 [Releases页面](https://github.com/wanghaoggghappy/id_card_ocr/releases) - 下载正式版本
+
 现在GitHub Actions应该能够成功构建Windows EXE了！
 
 ---
 
 **最后更新**: 2026-02-28  
-**状态**: ✅ 已完全修复并测试
+**状态**: ✅ 已完全修复并测试  
+**相关文档**: [DOWNLOAD_ARTIFACTS_GUIDE.md](DOWNLOAD_ARTIFACTS_GUIDE.md)

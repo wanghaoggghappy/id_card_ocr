@@ -325,6 +325,44 @@ UnicodeEncodeError: 'charmap' codec can't encode characters
 
 详细说明见 [UTF8_FIX_GUIDE.md](UTF8_FIX_GUIDE.md)
 
+### 问题6: PowerShell语法错误
+
+**错误信息**:
+```
+ParserError: Missing '(' after 'if' in if statement
+```
+
+**原因**: GitHub Actions Windows runner默认使用PowerShell，不能使用CMD语法
+
+**解决方案**（已修复）:
+```yaml
+# ❌ 错误：使用了CMD语法
+- name: Check file
+  run: |
+    if not exist "file.txt" (
+      echo Error
+    )
+
+# ✅ 正确：使用PowerShell语法
+- name: Check file
+  shell: pwsh
+  run: |
+    if (Test-Path "file.txt") {
+      Write-Host "OK"
+    } else {
+      Write-Host "Error"
+      exit 1
+    }
+```
+
+**CMD vs PowerShell对照**:
+- `if exist` → `Test-Path`
+- `echo` → `Write-Host`
+- `echo > file` → `Out-File`
+- `%VAR%` → `$env:VAR`
+
+详细说明见 [BUILD_FIXES_SUMMARY.md](BUILD_FIXES_SUMMARY.md)
+
 ## 🔐 Secrets配置（可选）
 
 如果需要私有包或通知，添加Secrets：
