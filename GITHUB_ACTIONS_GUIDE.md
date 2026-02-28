@@ -264,8 +264,30 @@ runs-on: ${{ matrix.os }}
 
 ### 问题2: 依赖安装失败
 
-**原因**: requirements.txt中的包不兼容
-**解决**: 检查 `requirements-build.txt` 中的版本约束
+**错误信息**:
+```
+✗ OpenCV (未安装)
+✗ PDF处理 (未安装)
+```
+
+**原因**: 
+1. 包名和导入名不匹配（`opencv-python` vs `cv2`, `PyMuPDF` vs `fitz`）
+2. 使用了错误的requirements文件
+3. pip缓存问题
+
+**解决方案**（已修复）:
+- ✅ 使用 `requirements-build.txt` 而不是 `requirements.txt`
+- ✅ 修复 `check_dependencies()` 中的包名检查逻辑
+- ✅ 添加详细的包验证步骤
+- ✅ 升级pip、setuptools和wheel
+
+**手动验证**:
+```bash
+# 本地测试
+pip install -r requirements-build.txt
+python -c "import cv2; print(cv2.__version__)"
+python -c "import fitz; print(fitz.__version__)"
+```
 
 ### 问题3: EXE运行报错
 
@@ -286,6 +308,22 @@ runs-on: ${{ matrix.os }}
 # paddleocr  # 注释掉
 rapidocr-onnxruntime  # 改用RapidOCR
 ```
+
+### 问题5: UTF-8编码错误（中文乱码）
+
+**错误信息**:
+```
+UnicodeEncodeError: 'charmap' codec can't encode characters
+```
+
+**原因**: Windows默认使用cp1252编码，无法显示中文
+
+**解决方案**（已内置）:
+1. Python脚本添加编码处理（见 `build_vehicle_exe.py`）
+2. Workflow配置UTF-8环境变量
+3. 使用 `chcp 65001` 设置控制台编码
+
+详细说明见 [UTF8_FIX_GUIDE.md](UTF8_FIX_GUIDE.md)
 
 ## 🔐 Secrets配置（可选）
 

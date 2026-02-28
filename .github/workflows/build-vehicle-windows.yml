@@ -30,14 +30,31 @@ jobs:
     
     - name: 📦 Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller>=6.0.0
-        pip install -r requirements.txt
+        python -m pip install --upgrade pip setuptools wheel
+        echo "Installing from requirements-build.txt..."
+        pip install -r requirements-build.txt
+        echo "Installation complete!"
+      continue-on-error: false
         
-    - name: ℹ️ Check dependencies
+    - name: ℹ️ Verify installation
       run: |
+        echo "=========================================="
+        echo "Python Environment Information"
+        echo "=========================================="
         python --version
-        pip list | findstr -i "pyinstaller paddleocr openpyxl pymupdf opencv"
+        echo ""
+        echo "Pip version:"
+        pip --version
+        echo ""
+        echo "=========================================="
+        echo "Verifying Critical Packages"
+        echo "=========================================="
+        python -c "import cv2; print('✓ OpenCV:', cv2.__version__)"
+        python -c "import fitz; print('✓ PyMuPDF:', fitz.__version__)"
+        python -c "import paddleocr; print('✓ PaddleOCR installed')"
+        python -c "import openpyxl; print('✓ openpyxl:', openpyxl.__version__)"
+        python -c "import PyInstaller; print('✓ PyInstaller:', PyInstaller.__version__)"
+        echo "=========================================="
         
     - name: 🔨 Build Windows EXE
       env:

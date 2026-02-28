@@ -463,22 +463,23 @@ def check_dependencies():
     print("检查依赖...")
     print("-" * 70)
     
+    # 包名 -> (导入名, 显示名称, pip包名)
     required_packages = {
-        'PyInstaller': 'PyInstaller',
-        'paddleocr': 'PaddleOCR',
-        'openpyxl': 'Excel处理',
-        'opencv-python': 'OpenCV',
-        'PyMuPDF': 'PDF处理',
+        'PyInstaller': ('PyInstaller', 'PyInstaller', 'pyinstaller'),
+        'paddleocr': ('paddleocr', 'PaddleOCR', 'paddleocr'),
+        'openpyxl': ('openpyxl', 'Excel处理', 'openpyxl'),
+        'cv2': ('cv2', 'OpenCV', 'opencv-python'),
+        'fitz': ('fitz', 'PDF处理', 'PyMuPDF'),
     }
     
     missing = []
-    for package, name in required_packages.items():
+    for import_name, (module_name, display_name, pip_name) in required_packages.items():
         try:
-            __import__(package.replace('-', '_'))
-            print(f"  ✓ {name}")
+            __import__(module_name)
+            print(f"  ✓ {display_name}")
         except ImportError:
-            print(f"  ✗ {name} (未安装)")
-            missing.append(package)
+            print(f"  ✗ {display_name} (未安装)")
+            missing.append(pip_name)
     
     if missing:
         print(f"\n错误: 缺少以下依赖包:")
