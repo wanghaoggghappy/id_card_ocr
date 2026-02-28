@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.spec
+*.manifest
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# 模型文件
+models/*.onnx
+models/*.pth
+models/*.pdparams
+models/*.pdopt
+*.h5
+*.pb
+
+# 临时文件
+*.log
+*.tmp
+temp/
+tmp/
+
+# 图像文件（示例）
+test_images/
+*.jpg
+*.jpeg
+*.png
+*.pdf
+*.bmp
+*.tiff
+
+# 配置（如果包含敏感信息）
+# config.yaml
+
+# 构建产物
+release/

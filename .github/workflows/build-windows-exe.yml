@@ -1,0 +1,79 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r requirements-build.txt
+    
+    - name: Build EXE with PyInstaller
+      run: |
+        python build_exe.py
+    
+    - name: Test EXE
+      run: |
+        cd dist
+        .\id_card_ocr.exe --help
+        .\id_card_ocr.exe --list-engines
+    
+    - name: Create release directory
+      run: |
+        mkdir release
+        cp -r dist/id_card_ocr release/
+        cp README.md release/
+        cp config.yaml release/id_card_ocr/
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: id_card_ocr-windows-${{ github.sha }}
+        path: release/
+        retention-days: 30
+    
+    - name: Create Release (on tag)
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          release/id_card_ocr/**/*
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Package as ZIP
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        cd release
+        Compress-Archive -Path id_card_ocr -DestinationPath id_card_ocr-windows.zip
+    
+    - name: Upload Release ZIP
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/id_card_ocr-windows.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

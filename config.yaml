@@ -1,0 +1,87 @@
+# 身份证OCR识别系统配置
+
+# 默认使用的OCR引擎
+default_engine: "paddleocr"
+
+# 可用的OCR引擎列表
+engines:
+  paddleocr:
+    name: "PaddleOCR"
+    description: "百度开源OCR，中文识别效果最佳"
+    use_gpu: false
+    lang: "ch"
+    det_model_dir: null  # 使用默认模型
+    rec_model_dir: null
+    cls_model_dir: null
+    use_angle_cls: true
+    
+  easyocr:
+    name: "EasyOCR"
+    description: "简单易用，支持80+语言"
+    use_gpu: false
+    lang: ["ch_sim", "en"]
+    
+  tesseract:
+    name: "Tesseract OCR"
+    description: "Google开源经典OCR引擎"
+    lang: "chi_sim+eng"
+    config: "--psm 6"
+    
+  rapidocr:
+    name: "RapidOCR"
+    description: "PaddleOCR的ONNX版本，跨平台部署方便"
+    use_gpu: false
+    
+  cnocr:
+    name: "CnOCR"
+    description: "专门针对中文的轻量级OCR"
+    model_name: "densenet_lite_136-gru"
+    
+  deepseek:
+    name: "DeepSeek-OCR-2"
+    description: "DeepSeek AI最新的视觉语言OCR模型"
+    use_gpu: true
+    model_name: "deepseek-ai/DeepSeek-OCR-2"
+    use_flash_attn: true
+    base_size: 1024
+    image_size: 768
+    
+  deepseek-gguf:
+    name: "DeepSeek-OCR GGUF"
+    description: "DeepSeek OCR的GGUF量化版本，适合Mac/CPU运行"
+    use_gpu: false
+    model_path: "/Users/apple/work/python/vision/id_card_ocr/DeepSeek-OCR.Q8_0.gguf"  # 本地路径或 NexaAI/DeepSeek-OCR-GGUF:Q4_0
+
+# 身份证字段配置
+id_card_fields:
+  front:
+    - name: "姓名"
+      keywords: ["姓名", "名"]
+    - name: "性别"
+      keywords: ["性别", "男", "女"]
+    - name: "民族"
+      keywords: ["民族", "族"]
+    - name: "出生"
+      keywords: ["出生", "年", "月", "日"]
+    - name: "住址"
+      keywords: ["住址", "址"]
+    - name: "公民身份号码"
+      keywords: ["公民身份号码", "身份号码", "号码"]
+  back:
+    - name: "签发机关"
+      keywords: ["签发机关"]
+    - name: "有效期限"
+      keywords: ["有效期限", "有效期"]
+
+# 图像预处理配置
+preprocessing:
+  resize_width: 1280
+  denoise: true
+  enhance_contrast: true
+  deskew: true
+
+# 输出配置
+output:
+  save_result: true
+  result_dir: "./results"
+  save_visualization: true

@@ -1,0 +1,46 @@
+# 核心依赖
+opencv-python>=4.8.0
+numpy>=1.24.0
+Pillow>=10.0.0
+PyMuPDF>=1.23.0  # PDF处理库
+
+# OCR模型选项
+# 1. PaddleOCR - 百度开源，中文识别最佳
+# CPU版本（Mac和开发环境）
+paddlepaddle>=2.5.0
+paddleocr>=2.7.0
+# GPU版本（取消注释并注释掉上面的CPU版本）：
+# paddlepaddle-gpu>=2.5.0
+
+# 2. EasyOCR - 简单易用，多语言支持
+easyocr>=1.7.0
+
+# 3. Tesseract OCR - 经典开源引擎
+pytesseract>=0.3.10
+
+# 4. RapidOCR - PaddleOCR的ONNX版本，部署更方便
+rapidocr-onnxruntime>=1.3.0
+
+# 5. CnOCR - 专门针对中文的OCR
+cnocr>=2.2.0
+
+# 6. DeepSeek-OCR-2 - DeepSeek AI最新的视觉语言OCR模型（需要GPU）
+# 取消注释以下依赖来使用DeepSeek-OCR-2:
+# torch>=2.6.0
+# transformers>=4.46.3
+# tokenizers>=0.20.3
+# einops
+# addict
+# easydict
+# flash-attn==2.7.3  # 可选，用于加速，需要CUDA
+
+# 7. DeepSeek-OCR GGUF - 通过NexaSDK在Mac/CPU上运行（推荐Mac用户）
+# 取消注释以下依赖来使用DeepSeek-OCR GGUF:
+# nexaai  # NexaSDK，支持GGUF量化模型
+
+# 工具库
+python-dateutil>=2.8.0
+pyyaml>=6.0
+tqdm>=4.65.0
+openpyxl>=3.1.0  # Excel读写
+rarfile>=4.0  # RAR压缩包支持（可选，需要安装unrar）

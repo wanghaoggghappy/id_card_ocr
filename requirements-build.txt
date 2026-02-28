@@ -1,0 +1,29 @@
+# 构建Windows EXE所需的依赖
+# 这是精简版依赖列表，只包含必要的组件
+
+# 核心依赖
+opencv-python>=4.8.0
+numpy>=1.24.0
+Pillow>=10.0.0
+PyMuPDF>=1.23.0
+
+# 默认OCR引擎 - PaddleOCR (中文识别最佳)
+paddlepaddle>=2.5.0
+paddleocr>=2.7.0
+
+# 轻量级OCR引擎（可选，如果要减小体积）
+rapidocr-onnxruntime>=1.3.0
+
+# Excel处理（车辆档案系统必需）
+openpyxl>=3.1.0
+
+# 工具库
+python-dateutil>=2.8.0
+pyyaml>=6.0
+
+# 打包工具
+pyinstaller>=6.0.0
+
+# 注意：
+# 1. 如果只需要RapidOCR（体积小），可以删除paddlepaddle和paddleocr
+# 2. 如果需要其他OCR引擎，参考 requirements.txt
