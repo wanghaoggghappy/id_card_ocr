@@ -40,7 +40,10 @@ jobs:
         pip list | findstr -i "pyinstaller paddleocr openpyxl pymupdf opencv"
         
     - name: 🔨 Build Windows EXE
+      env:
+        PYTHONIOENCODING: utf-8
       run: |
+        chcp 65001
         python build_vehicle_exe.py
         
     - name: ✅ Verify build output
@@ -53,7 +56,10 @@ jobs:
         echo Build successful!
         
     - name: 🧪 Test EXE (help command)
+      env:
+        PYTHONIOENCODING: utf-8
       run: |
+        chcp 65001
         cd dist\VehicleArchiveProcessor
         .\VehicleArchiveProcessor.exe --help
         .\VehicleArchiveProcessor.exe --version

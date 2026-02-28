@@ -9,6 +9,14 @@ import shutil
 import subprocess
 from pathlib import Path
 
+# 修复Windows控制台UTF-8编码问题
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    # 设置环境变量
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+
 
 def clean_build_dirs():
     """清理旧的构建目录"""

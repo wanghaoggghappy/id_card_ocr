@@ -7,8 +7,16 @@
 
 import argparse
 import sys
+import os
 from pathlib import Path
 from process_vehicle_archives import VehicleArchiveProcessor
+
+# 修复Windows控制台UTF-8编码问题
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
 
 
 def main():
